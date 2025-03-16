@@ -10,3 +10,5 @@ pandas
 playwright
 playwright_stealth
 tiktoken
+pyyaml
+
