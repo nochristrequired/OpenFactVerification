@@ -23,11 +23,13 @@ class LocalOpenAIClient(BaseClient):
 
     def _call(self, messages: str, **kwargs):
         seed = kwargs.get("seed", 42)  # default seed is 42
+        temperature = kwargs.get("temperature", 0.0)
         assert type(seed) is int, "Seed must be an integer."
 
         response = openai.chat.completions.create(
             response_format={"type": "json_object"},
             seed=seed,
+            temperature=temperature,
             model=self.model,
             messages=messages,
         )
@@ -41,7 +43,7 @@ class LocalOpenAIClient(BaseClient):
     def construct_message_list(
         self,
         prompt_list: list[str],
-        system_role: str = "You are a helpful assistant designed to output JSON.",
+        system_role: str = "You are a helpful assistant designed to output valid JSON and nothing else.\n\nFollow these rules carefully:\n1. Do not include any code fences (like ```json).\n2. Do not include explanations, apologies, or extra text before or after the JSON.\n3. The entire response must be valid JSON, and must parse without error.\n\nOnly return the JSON object for your final output.",
     ):
         messages_list = list()
         for prompt in prompt_list:
